@@ -1,6 +1,8 @@
 """
 Code from Modeling and Simulation in Python.
+
 Copyright 2017 Allen Downey
+
 License: https://creativecommons.org/licenses/by/4.0)
 """
 
@@ -44,6 +46,7 @@ def linspace(start, stop, num=50, **kwargs):
     start: first value
     stop: last value
     num: number of values
+
     Also accepts the same keyword arguments as np.linspace.  See
     https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html
     
@@ -66,12 +69,15 @@ def linrange(start=0, stop=None, step=1, **kwargs):
     
     This function works best if the space between start and stop
     is divisible by step; otherwise the results might be surprising.
+
     By default, the last value in the array is `stop` (at least approximately).
     If you provide the keyword argument `endpoint=False`, the last value
     in the array is `stop-step`. 
+
     start: first value
     stop: last value
     step: space between values
+
     Also accepts the same keyword arguments as np.linspace.  See
     https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html
     
@@ -137,7 +143,9 @@ def fit_leastsq(error_func, params, data, **kwargs):
 @property
 def dimensionality(self):
     """Unit's dimensionality (e.g. {length: 1, time: -1})
+
     This is a simplified version of this method that does no caching.
+
     returns: dimensionality
     """
     dim = self._REGISTRY._get_dimensionality(self._units)
@@ -279,8 +287,10 @@ def run_odeint(system, slope_func, **kwargs):
 
 def interpolate(series, **options):
     """Creates an interpolation function.
+
     series: Series object
     options: any legal options to scipy.interpolate.interp1d
+
     returns: function that maps from the index of the series to values 
     """
     if sum(series.index.isnull()):
@@ -314,6 +324,7 @@ def interp_inverse(series, **options):
 
 def unpack(series):
     """Make the names in `series` available as globals.
+
     series: Series with variables names in the index
     """
     frame = inspect.currentframe()
@@ -357,7 +368,9 @@ def fsolve(func, x0, *args, **kwargs):
 
 def underride(d, **options):
     """Add key-value pairs to d only if key is not in d.
+
     If d is None, create a new dictionary.
+
     d: dictionary
     options: keyword args to add to d
     """
@@ -380,7 +393,9 @@ class Simplot:
         
     def get_figure_state(self, figure=None):
         """Gets the state of the current figure.
+
         figure: Figure
+
         returns: FigureState object
         """
         if figure is None:
@@ -404,8 +419,10 @@ class FigureState:
         
     def get_line(self, style, kwargs):
         """Gets the line object for a given style tuple.
+
         style: Matplotlib style string
         kwargs: dictionary of style options
+
         returns: maplotlib.lines.Lines2D
         """
         color = kwargs.get('color')
@@ -520,7 +537,9 @@ def plot(*args, **kwargs):
 
 def contour(df, **options):
     """Makes a contour plot from a DataFrame.
+
     Note: columns and index must be numerical
+
     df: DataFrame
     """
     x = results.columns
@@ -539,6 +558,7 @@ def newfig(**kwargs):
 
 def savefig(filename, *args, **kwargs):
     """Save the current figure.
+
     filename: string
     """
     print('Saving figure to file', filename)
@@ -547,9 +567,11 @@ def savefig(filename, *args, **kwargs):
     
 def label_axes(xlabel=None, ylabel=None, title=None, **kwargs):
     """Puts labels and title on the axes.
+
     xlabel: string
     ylabel: string
     title: string
+
     kwargs: options passed to pyplot
     """
     ax = plt.gca()
@@ -622,6 +644,7 @@ def nolegend():
 
 def remove_from_legend(bad_labels):
     """Removes some labels from the legend.
+
     bad_labels: sequence of strings
     """
     ax = plt.gca()
@@ -636,13 +659,18 @@ def remove_from_legend(bad_labels):
 
 def decorate(**kwargs):
     """Decorate the current axes.
+
     Call decorate with keyword arguments like
+
     decorate(title='Title',
              xlabel='x',
              ylabel='y')
+
     The keyword arguments can be any of the axis properties
     defined by Matplotlib.  To see the list, run plt.getp(plt.gca())
+
     In addition, you can use `legend=False` to suppress the legend.
+
     And you can use `loc` to indicate the location of the legend
     (the default value is 'best')
     """
@@ -662,6 +690,7 @@ class MySeries(pd.Series):
 
     def __init__(self, *args, **kwargs):
         """Initialize a Series.
+
         Note: this cleans up a weird Series behavior, which is
         that Series() and Series([]) yield different results.
         See: https://github.com/pandas-dev/pandas/issues/16737
@@ -674,6 +703,7 @@ class MySeries(pd.Series):
 
     def _repr_html_(self):
         """Returns an HTML representation of the series.
+
         Mostly used for Jupyter notebooks.
         """
         df = pd.DataFrame(self, columns=['value'])
@@ -681,6 +711,7 @@ class MySeries(pd.Series):
 
     def set(self, **kwargs):
         """Uses keyword arguments to update the Series in place.
+
         Example: series.update(a=1, b=2)
         """
         for name, value in kwargs.items():
@@ -700,8 +731,11 @@ class TimeSeries(MySeries):
 class System(MySeries):
     def __init__(self, *args, **kwargs):
         """Initialize the series.
+
         If there are no positional arguments, use kwargs.
+
         If there is one positional argument, copy it.
+
         More than one positional argument is an error. 
         """
         if len(args) == 0:
@@ -717,6 +751,7 @@ class System(MySeries):
     def dt(self):
         """Intercept the Series accessor object so we can use `dt`
         as a row label and access it using dot notation.
+
         https://pandas.pydata.org/pandas-docs/stable/generated/
         pandas.Series.dt.html
         """
@@ -726,6 +761,7 @@ class System(MySeries):
     def T(self):
         """Intercept the Series accessor object so we can use `T`
         as a row label and access it using dot notation.
+
         https://pandas.pydata.org/pandas-docs/stable/generated/
         pandas.Series.T.html#pandas.Series.T     """
         return self.loc['T']
@@ -770,9 +806,11 @@ def round(*args):
 class MyDataFrame(pd.DataFrame):
     """MyTimeFrame is a modified version of a Pandas DataFrame,
     with a few changes to make it more suited to our purpose.
+
     In particular, DataFrame provides two special variables called
     `dt` and `T` that cause problems if we try to use those names
     as state variables.
+
     So I added new definitions that override the special variables
     and make these names useable as row labels.
     """
@@ -784,6 +822,7 @@ class MyDataFrame(pd.DataFrame):
     def dt(self):
         """Intercept the Series accessor object so we can use `dt`
         as a row label and access it using dot notation.
+
         https://pandas.pydata.org/pandas-docs/stable/generated/
         pandas.DataFrame.dt.html
         """
@@ -793,6 +832,7 @@ class MyDataFrame(pd.DataFrame):
     def T(self):
         """Intercept the Series accessor object so we can use `T`
         as a row label and access it using dot notation.
+
         https://pandas.pydata.org/pandas-docs/stable/generated/
         pandas.DataFrame.T.html#pandas.DataFrame.T     """
         return self.loc['T']
